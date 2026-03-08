@@ -71,7 +71,7 @@ def _notebook_to_dict(notebook: Any) -> dict:
         "id": notebook.id,
         "title": notebook.title,
         "created_at": notebook.created_at.isoformat() if notebook.created_at else None,
-        "updated_at": notebook.updated_at.isoformat() if notebook.updated_at else None,
+        "is_owner": notebook.is_owner,
     }
 
 
@@ -840,7 +840,7 @@ async def run_server(host: str, port: int) -> None:
 
     async def handle_sse(request):
         async with sse.connect_sse(request.scope, request.receive, request._send) as streams:
-            await server.run(streams[0], streams[1], server.create_initialization_options())
+            await server.run(streams[0], streams[1], server.create_initialization_options(), stateless=True)
 
     starlette_app = Starlette(
         routes=[
