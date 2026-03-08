@@ -1,0 +1,9 @@
+services:
+  notebooklm-mcp:
+    build: .
+    ports:
+      - "8765:8765"
+    volumes:
+      - ~/.notebooklm:/data          # auth storage_state.json
+      - ~/notebooklm-downloads:/downloads  # artifact output
+    restart: unless-stopped
