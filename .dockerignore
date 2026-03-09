@@ -5,3 +5,5 @@ __pycache__/
 tests/
 *.png
 *.pptx
+storage_state.json
+.notebooklm/
