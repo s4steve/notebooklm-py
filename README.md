@@ -201,25 +201,83 @@ notebooklm skill install
 
 Expose all NotebookLM capabilities to any MCP-compatible client (Claude Desktop, Claude Code, Cursor, etc.) via a local SSE server.
 
+#### Prerequisites
+
+Authenticate before starting the server — the server reads credentials from `~/.notebooklm/storage_state.json`:
+
+```bash
+notebooklm login
+```
+
+#### Local Setup
+
 ```bash
 # Install with MCP support
 pip install "notebooklm-py[mcp]"
 
-# Start the MCP server
+# Start on localhost only (default, safest)
+notebooklm-mcp
+
+# Expose on the network (required for Docker or remote clients)
 notebooklm-mcp --host 0.0.0.0 --port 8765
 
-# Connect from Claude Code
+# Secure with an API key (recommended when network-exposed)
+notebooklm-mcp --api-key my-secret-key
+# or via environment variable:
+NOTEBOOKLM_MCP_API_KEY=my-secret-key notebooklm-mcp
+```
+
+#### Connect from an MCP Client
+
+```bash
+# Claude Code
 claude mcp add notebooklm --transport sse http://localhost:8765/sse
+
+# Claude Code with API key
+claude mcp add notebooklm --transport sse http://localhost:8765/sse \
+  --header "Authorization: Bearer my-secret-key"
+```
+
+Or add directly to `~/.claude/settings.json` (Claude Code) or your Claude Desktop config:
+
+```json
+{
+  "mcpServers": {
+    "notebooklm": {
+      "url": "http://localhost:8765/sse"
+    }
+  }
+}
 ```
 
 #### Docker
 
 ```bash
-# Clone the repo and start with Docker Compose
+# 1. Authenticate first (creates ~/.notebooklm/storage_state.json)
+notebooklm login
+
+# 2. Clone and start with Docker Compose
+git clone https://github.com/teng-lin/notebooklm-py
+cd notebooklm-py
 docker compose up
 ```
 
-The server exposes **27 MCP tools** covering notebooks, sources, chat, artifacts, notes, and downloads. Downloads are saved to `NOTEBOOKLM_DOWNLOAD_DIR` (default: `~/notebooklm-downloads/`).
+The Docker container mounts `~/.notebooklm` for auth and `~/notebooklm-downloads` for artifact output. To set an API key, add it to a `.env` file before starting:
+
+```bash
+cp .env.example .env
+# Add this line to .env:
+# NOTEBOOKLM_MCP_API_KEY=your-secret-key
+```
+
+#### Configuration
+
+| Environment Variable | Default | Description |
+|---|---|---|
+| `NOTEBOOKLM_MCP_API_KEY` | *(none)* | Bearer token required on all requests |
+| `NOTEBOOKLM_DOWNLOAD_DIR` | `~/notebooklm-downloads` | Directory where generated artifacts are saved |
+
+The server exposes **26 MCP tools** covering notebooks, sources, chat, artifacts, notes, and downloads.
 
 ## Documentation
 
