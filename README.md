@@ -32,13 +32,14 @@
 
 📥 **Downloads & Export** - Download all generated artifacts locally (MP3, MP4, PDF, PNG, CSV, JSON, Markdown). Export to Google Docs/Sheets. **Features the web UI doesn't offer**: batch downloads, quiz/flashcard export in multiple formats, mind map JSON extraction.
 
-## Three Ways to Use
+## Four Ways to Use
 
 | Method | Best For |
 |--------|----------|
 | **Python API** | Application integration, async workflows, custom pipelines |
 | **CLI** | Shell scripts, quick tasks, CI/CD automation |
 | **Agent Skills** | Claude Code, LLM agents, natural language automation |
+| **MCP Server** | Connect any MCP-compatible client (Claude Desktop, Claude Code, etc.) |
 
 ## Features
 
@@ -90,6 +91,12 @@ pip install notebooklm-py
 # With browser login support (required for first-time setup)
 pip install "notebooklm-py[browser]"
 playwright install chromium
+
+# With MCP server support
+pip install "notebooklm-py[mcp]"
+
+# Everything
+pip install "notebooklm-py[all]"
 ```
 
 ### Development Installation
@@ -189,6 +196,30 @@ notebooklm skill install
 # "Download the quiz as markdown"
 # "/notebooklm generate video"
 ```
+
+### MCP Server
+
+Expose all NotebookLM capabilities to any MCP-compatible client (Claude Desktop, Claude Code, Cursor, etc.) via a local SSE server.
+
+```bash
+# Install with MCP support
+pip install "notebooklm-py[mcp]"
+
+# Start the MCP server
+notebooklm-mcp --host 0.0.0.0 --port 8765
+
+# Connect from Claude Code
+claude mcp add notebooklm --transport sse http://localhost:8765/sse
+```
+
+#### Docker
+
+```bash
+# Clone the repo and start with Docker Compose
+docker compose up
+```
+
+The server exposes **27 MCP tools** covering notebooks, sources, chat, artifacts, notes, and downloads. Downloads are saved to `NOTEBOOKLM_DOWNLOAD_DIR` (default: `~/notebooklm-downloads/`).
 
 ## Documentation
 
